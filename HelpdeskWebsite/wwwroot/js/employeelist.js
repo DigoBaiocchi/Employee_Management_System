@@ -104,6 +104,7 @@
             console.table(error)
         }
         $("#theModal").modal("toggle");
+        //})
     };
 
     const clearModalFields = () => {
