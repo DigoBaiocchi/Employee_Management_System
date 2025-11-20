@@ -108,7 +108,7 @@ namespace HelpdeskViewModels
                         DepartmentId = emp.DepartmentId,
                         IsTech = emp.IsTech,
                         StaffPicture64 = StaffPicture64 != null ? Convert.ToBase64String(emp.StaffPicture!) : null,
-                        Timer = Convert.ToBase64String(emp.Timer)
+                        Timer = Convert.ToBase64String(emp.Timer!)
                     };
 
                     allVms.Add(empVm);

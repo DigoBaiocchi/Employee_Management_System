@@ -94,10 +94,29 @@
                                                class="form-control" />
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-4">Department:</div>
+                                    <div class="col-8"><select id="ddlDepartments" name="ddlDepartments" class="form-control"></select></div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer text-center">
-                            <button type="button" class="btn btn-primary" id="actionbutton" ></button>
+                            <div class="row flex-column">
+                                <div class="row flex-row justify-content-center" style="padding:0vw; margin: 0">
+                                    <input type="button" value="update" id="actionbutton" class="col-3 m-2 btn btn-secondary col-5"
+                                           style="left:20%" />
+                                    <input type="button" value="delete" id="deletebutton" class="col-3 m-2 btn btn-secondary col-5" />
+                                </div>
+
+                                <div class="alert alert-danger fade show" role="alert" id="dialog"
+                                        style="width:auto;margin-top:2vh;margin-left:0vw;">
+                                    <strong>What's it going to be?</strong><p></p>
+                                    <input type="button" class="btn btn-secondary mt-3" value="yes" id="yesbutton" />
+                                    <input type="button" class="btn btn-secondary mt-3" value="No" id="nobutton" />
+                                </div>
+                                <div id="status"></div>
+                            </div>
+                            <div id="modalstatus" class="text-left mt-3 mb-2"></div>
                         </div>
                     </div>
                 </div>

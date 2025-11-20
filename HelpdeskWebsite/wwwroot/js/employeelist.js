@@ -14,6 +14,17 @@
             } else { // else 404 not found
                 $("$#status").text("no such path on server");
             } // else
+            // get department data
+            response = await fetch(`api/department`);
+            if (response.ok) {
+                let divs = await response.json(); // this returns a promise, so we await it
+                sessionStorage.setItem("alldepartments", JSON.stringify(divs));
+            } else if (response.status !== 404) { // probably some other client side error
+                let problemJson = await response.json();
+                errorRtn(problemJson, response.status);
+            } else { // else 404 not found
+                $("#status").text("no such path on server");
+            } // else
         } catch (error) {
             $("#status").text(error.message);
         } // end try / catch
@@ -68,6 +79,7 @@
             emp.lastname = $("#TextBoxSurname").val();
             emp.email = $("#TextBoxEmail").val();
             emp.phoneno = $("#TextBoxPhone").val();
+            emp.departmentId = parseInt($("#ddlDepartments").val());
             // send the updated back to the server asynchronously using HTTP PUT
             let response = await fetch("api/employee", {
                 method: "PUT",
@@ -95,6 +107,7 @@
     };
 
     const clearModalFields = () => {
+        loadDepartmentDDL(-1);
         $("#TextBoxTitle").val("");
         $("#TextBoxFirst").val("");
         $("#TextBoxSurname").val("");
@@ -111,6 +124,7 @@
         $("#theModal").modal("toggle");
         $("#modalstatus").text("add new employee");
         $("theModalLabel").text("Add");
+        $("#deletebutton").hide();
         clearModalFields();
     }; // setupForAdd
 
@@ -131,6 +145,8 @@
                 $("#modalstatus").text("update data");
                 $("#theModal").modal("toggle");
                 $("#theModalLabel").text("Update");
+                $("#deletebutton").show();
+                loadDepartmentDDL(employee.departmentId);
             }
         })
     }; // setupForUpdate
@@ -143,7 +159,7 @@
             emp.lastname = $("#TextBoxSurname").val();
             emp.email = $("#TextBoxEmail").val();
             emp.phoneno = $("#TextBoxPhone").val();
-            emp.departmentId = 100; // hard code it for now
+            emp.departmentId = parseInt($("#ddlDepartments").val()); // hard code it for now
             emp.id = -1;
             emp.timer = null;
             emp.staffPicture64 = null;
@@ -172,9 +188,55 @@
         $("#theModal").modal("toggle");
     }// add
 
+    const _delete = async () => {
+        let employee = JSON.parse(sessionStorage.getItem("employee"));
+        try {
+
+            let response = await fetch(`api/employee/${employee.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json; charset=utf-8' }
+            });
+            if (response.ok) // or check for response.status
+            {
+                let data = await response.json();
+                getAll(data.msg);
+            } else {
+                $('#status').text(`Status - ${response.status}, Problem on delete server side, see server console`);
+            } // else
+            $('#theModal').modal('toggle');
+        } catch (error) {
+            $('#status').text(error.message);
+        }
+    }; // _delete
+
+    const loadDepartmentDDL = (deptdiv) => {
+        html = '';
+        $('#ddlDepartments').empty();
+        let allDepartments = JSON.parse(sessionStorage.getItem('alldepartments'));
+        allDepartments.forEach((dept) => { html += `<option value="${dept.id}">${dept.name}</option>` });
+        $('#ddlDepartments').append(html);
+        $('#ddlDepartments').val(deptdiv);
+    }; // loadDepartmentDDL
+
+    $("#deletebutton").on("click", () => {
+        $("#dialog").show();
+    }); // deletebutton click
+
     $("#actionbutton").on("click", () => {
         $("#actionbutton").val() === "update" ? update() : add();
     }); // action button click
+
+    $("#dialog").hide();
+
+    $("#nobutton").on("click", (e) => {
+        $("#dialog").hide();
+        $("#modalstatus").text("delete cancelled");
+    });
+
+    $("#yesbutton").on("click", () => {
+        $("#dialog").hide();
+        _delete();
+    });
 }); // jQuery ready method
 
 // server was reached but server had a problem with the call
