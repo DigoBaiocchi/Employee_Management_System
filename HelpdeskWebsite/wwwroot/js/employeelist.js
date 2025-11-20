@@ -1,4 +1,51 @@
 ﻿$(() => {
+    document.addEventListener("keyup", e => {
+        $("#modalstatus").removeClass(); // remove any existing css on div
+        if ($("#EmployeeModalForm").valid()) {
+            $("#modalstatus").attr("class", "badge bg-success"); // add class with color green
+            $("#modalstatus").text("data entered is valid");
+            $("#actionbutton").prop("disabled", false);
+        }
+        else {
+            $("#modalstatus").attr("class", "badge bg-danger"); // add class with color red
+            $("#modalstatus").text("fix errors");
+            $("#actionbutton").prop("disabled", true);
+        }
+    });
+
+    $("#EmployeeModalForm").validate({
+        rules: {
+            TextBoxTitle: { maxlength: 4, required: true, validTitle: true },
+            TextBoxFirst: { maxlength: 25, required: true },
+            TextBoxSurname: { maxlength: 25, required: true },
+            TextBoxEmail: { maxlength: 40, required: true, email: true },
+            TextBoxPhone: { maxlength: 15, required: true }
+        },
+        errorElement: "div",
+        messages: {
+            TextBoxTitle: {
+                required: "required 1-4 chars.", maxlength: "required 1-4 chars.", validTitle: "Mr. Ms. Mrs. or Dr."
+            },
+            TextBoxFirst: {
+                required: "required 1-25 chars.", maxlength: "required 1-25 chars."
+            },
+            TextBoxSurname: {
+                required: "required 1-25 chars.", maxlength: "required 1-25 chars."
+            },
+            TextBoxPhone: {
+                required: "required 1-15 chars.", maxlength: "required 1-15 chars."
+            },
+            TextBoxEmail: {
+                required: "required 1-40 chars.", maxlength: "required 1-40 chars.", email: "need valid email format"
+            }
+        }
+    });
+
+    $.validator.addMethod("validTitle", value => { // custom rule
+        return (value === "Mr." || value === "Ms." || value === "Mrs." || value === "Dr.");
+    }, ""); // .validator.addMethod
+
+
     const getAll = async (msg) => {
         try {
             $("#employeeList").text("Finding Employee Information...");
@@ -116,6 +163,8 @@
         $("#TextBoxPhone").val("");
         sessionStorage.removeItem("employee");
         $("#theModal").modal("toggle");
+        let validator = $("#EmployeeModalForm").validate();
+        validator.resetForm();
     }; // clearModalFields
 
     const setupForAdd = () => {
@@ -144,6 +193,7 @@
                 $("#TextBoxPhone").val(employee.phoneno);
                 sessionStorage.setItem("employee", JSON.stringify(employee));
                 $("#modalstatus").text("update data");
+                $("#actionbutton").prop("disabled", false);
                 $("#theModal").modal("toggle");
                 $("#theModalLabel").text("Update");
                 $("#deletebutton").show();
@@ -238,6 +288,7 @@
         $("#dialog").hide();
         _delete();
     });
+
 }); // jQuery ready method
 
 // server was reached but server had a problem with the call
