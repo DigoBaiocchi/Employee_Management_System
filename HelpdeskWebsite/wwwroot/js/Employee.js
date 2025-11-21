@@ -77,7 +77,7 @@
         } // end try / catch
     } // get All
 
-    const buildEmployeeList = (data) => {
+    const buildEmployeeList = (data, useAllData = true) => {
         $("#employeeList").empty();
         div = $(`<div class="list-group-item text-white bg-secondary row d-flex" id="status">Employee Info</div>
                     <div class="list-group-item row d-flex text-center" id="heading">
@@ -86,7 +86,7 @@
                     <div class="col-4 h4">Last</div>
                 </div>`);
         div.appendTo($("#employeeList"));
-        sessionStorage.setItem("allemployees", JSON.stringify(data));
+        useAllData ? sessionStorage.setItem("allemployees", JSON.stringify(data)) : null;
         btn = $(`<button class="list-group-item row d-flex" id="0">...click to add employee</button>`);
         btn.appendTo($("#employeeList"));
         data.forEach(emp => {
@@ -287,6 +287,12 @@
     $("#yesbutton").on("click", () => {
         $("#dialog").hide();
         _delete();
+    });
+
+    $("#srch").on("keyup", () => {
+        let allData = JSON.parse(sessionStorage.getItem("allemployees"));
+        let filteredData = allData.filter(emp => emp.lastname.match(new RegExp($("#srch").val(), 'i')));
+        buildEmployeeList(filteredData, false);
     });
 
 }); // jQuery ready method
