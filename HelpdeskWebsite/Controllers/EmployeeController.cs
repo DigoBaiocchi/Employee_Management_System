@@ -83,5 +83,23 @@ namespace HelpdeskWebsite.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError); // something went wrong
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                EmployeeViewModel viewModel = new() { Id = id };
+                return await viewModel.Delete() == 1
+                    ? Ok(new { msg = "Employee " + id + " deleted!" })
+                    : Ok(new { msg = "Employee " + id + " not deleted!" });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Problem in " + GetType().Name + " " +
+                    MethodBase.GetCurrentMethod()!.Name + " " + ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError); // something went wrong
+            }
+        }
     }
 }
