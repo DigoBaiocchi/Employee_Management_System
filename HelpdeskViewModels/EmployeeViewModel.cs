@@ -46,7 +46,7 @@ namespace HelpdeskViewModels
                 IsTech = emp.IsTech;
                 if (emp.StaffPicture != null)
                     StaffPicture64 = Convert.ToBase64String(emp.StaffPicture);
-                Timer = Convert.ToBase64String(emp.Timer);
+                Timer = Convert.ToBase64String(emp.Timer!);
             }
             catch (NullReferenceException nex)
             {
@@ -75,7 +75,7 @@ namespace HelpdeskViewModels
                 IsTech = emp.IsTech;
                 if (emp.StaffPicture != null)
                     StaffPicture64 = Convert.ToBase64String(emp.StaffPicture);
-                Timer = Convert.ToBase64String(emp.Timer);
+                Timer = Convert.ToBase64String(emp.Timer!);
             }
             catch (NullReferenceException nex)
             {
@@ -107,7 +107,7 @@ namespace HelpdeskViewModels
                         Email = emp.Email,
                         DepartmentId = emp.DepartmentId,
                         IsTech = emp.IsTech,
-                        StaffPicture64 = StaffPicture64 != null ? Convert.ToBase64String(emp.StaffPicture!) : null,
+                        StaffPicture64 = emp.StaffPicture != null ? Convert.ToBase64String(emp.StaffPicture!) : null,
                         Timer = Convert.ToBase64String(emp.Timer!)
                     };
 
@@ -207,7 +207,7 @@ namespace HelpdeskViewModels
                 DepartmentId = emp.DepartmentId;
                 IsTech = emp.IsTech;
                 StaffPicture64 = StaffPicture64 != null ? Convert.ToBase64String(emp.StaffPicture!) : null;
-                Timer = Convert.ToBase64String(emp.Timer);
+                Timer = Convert.ToBase64String(emp.Timer!);
             }
             catch (NullReferenceException nex)
             {

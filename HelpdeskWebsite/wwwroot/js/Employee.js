@@ -162,6 +162,10 @@
         $("#TextBoxEmail").val("");
         $("#TextBoxPhone").val("");
         sessionStorage.removeItem("employee");
+        sessionStorage.removeItem("picture");
+        $("#uploadstatus").text("");
+        $("#imageHolder").html("");
+        $("#uploader").val("");
         $("#theModal").modal("toggle");
         let validator = $("#EmployeeModalForm").validate();
         validator.resetForm();
@@ -176,6 +180,7 @@
         $("theModalLabel").text("Add");
         $("#deletebutton").hide();
         clearModalFields();
+        $("#imageHolder").html(`<img height="120" width="110" src="data:img/png;base64,employee.staffpicture64" />`);
     }; // setupForAdd
 
     const setupForUpdate = (id, data) => {
@@ -198,6 +203,7 @@
                 $("#theModalLabel").text("Update");
                 $("#deletebutton").show();
                 loadDepartmentDDL(employee.departmentId);
+                $("#imageHolder").html(`<img height="120" width="110" src="data:img/png;base64,${employee.staffPicture64}" />`);
             }
         })
     }; // setupForUpdate
@@ -213,7 +219,7 @@
             emp.departmentId = parseInt($("#ddlDepartments").val()); // hard code it for now
             emp.id = -1;
             emp.timer = null;
-            emp.staffPicture64 = null;
+            emp.staffPicture64 = JSON.parse(sessionStorage.getItem("picture"));
             // send the employee info to the server asynchronously using POST
             let response = await fetch("api/employee", {
                 method: "POST",
@@ -294,6 +300,30 @@
         let filteredData = allData.filter(emp => emp.lastname.match(new RegExp($("#srch").val(), 'i')));
         buildEmployeeList(filteredData, false);
     });
+
+    $("input:file").on("change", () => {
+        try {
+            const reader = new FileReader();
+            const file = $("#uploader")[0].files[0];
+            $("#uploadstatus").text("");
+            file ? reader.readAsBinaryString(file) : null;
+            reader.onload = (readerEvt) => {
+                // get binary data then covnert to encoded string
+                const binaryString = reader.result;
+                const encodedString = btoa(binaryString);
+                // replace the picture in session storage
+                sessionStorage.setItem("picture", JSON.stringify(encodedString));
+                let employee = JSON.parse(sessionStorage.getItem("employee"));
+                if (employee) {
+                    employee.staffPicture64 = encodedString;
+                    sessionStorage.setItem("employee", JSON.stringify(employee));
+                    $("#uploadstatus").text("retrieve local pic");
+                }
+            };
+        } catch (error) {
+            $("#uploadstatus").text("pic upload failed");
+        }
+    }); // input file change
 
 }); // jQuery ready method
 
